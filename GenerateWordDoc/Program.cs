@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
@@ -20,34 +21,29 @@ namespace GenerateWordDoc
             public bool MergeAbove;
         }
 
-        private class DocumentBuilder
+        private static class DocumentBuilderHelpers
         {
-            private readonly WordprocessingDocument _document;
-            private readonly MainDocumentPart _mainPart;
-            public readonly Body Body;
-
-            public DocumentBuilder(string filePath)
+            public static void AddTextToElement(OpenXmlElement element, string text)
             {
-                _document = WordprocessingDocument.Create(filePath, WordprocessingDocumentType.Document);
-                _mainPart = _document.AddMainDocumentPart();
-                _mainPart.Document = new Document(new Body());
-                Body = _mainPart.Document.Body;
+                var splitText = text.Split(new[] {"\r\n", "\n", "\r"}, StringSplitOptions.RemoveEmptyEntries);
+                foreach (var line in splitText)
+                {
+                    element.AppendChild(new Text(line));
+                    if (line != splitText.Last())
+                    {
+                        element.AppendChild(new Break());
+                    }
+                }
             }
+        }
 
-            public void AddParagraphToDocument(string text)
+        private class TableBuilder
+        {
+            private readonly Table _table;
+
+            public TableBuilder()
             {
-                var run = new Run(new Text(text));
-                var runProperties = new RunProperties();
-                runProperties.AppendChild(new Bold());
-                run.RunProperties = runProperties;
-
-                var para = new Paragraph(run);
-                Body.AppendChild(para);
-            }
-
-            public void AddTable(List<List<BuilderTableCell>> data)
-            {
-                var table = new Table();
+                _table = new Table();
 
                 var tableProperties = new TableProperties
                 {
@@ -68,45 +64,86 @@ namespace GenerateWordDoc
                     }
                 };
 
-                table.AppendChild(tableProperties);
+                _table.AppendChild(tableProperties);
+            }
 
-                data.ForEach(dataRow =>
+            public void AddRowToTable(List<BuilderTableCell> rowCells)
+            {
+                var tableRow = new TableRow();
+                rowCells.ForEach(dataCell =>
                 {
-                    var tableRow = new TableRow();
-                    dataRow.ForEach(dataCell =>
+                    var tableCell = new TableCell();
+                    var tableCellProperties = new TableCellProperties
                     {
-                        var tableCell = new TableCell();
-                        var tableCellProperties = new TableCellProperties
+                        VerticalMerge = new VerticalMerge
                         {
-                            VerticalMerge = new VerticalMerge
-                            {
-                                Val = MergedCellValues.Restart
-                            }
-                        };
-
-                        if (dataCell.Options != null && dataCell.Options.MergeAbove)
-                        {
-                            tableCellProperties.VerticalMerge.Val = MergedCellValues.Continue;
+                            Val = MergedCellValues.Restart
                         }
+                    };
 
-                        tableCell.TableCellProperties = tableCellProperties;
-                        
-                        var paragraph = new Paragraph();
-                        var run = new Run(new Text(dataCell.Text));
+                    if (dataCell.Options != null && dataCell.Options.MergeAbove)
+                    {
+                        tableCellProperties.VerticalMerge.Val = MergedCellValues.Continue;
+                    }
 
-                        if (dataCell.Options != null && dataCell.Options.Bold)
-                        {
-                            run.RunProperties = new RunProperties(new Bold());
-                        }
+                    tableCell.TableCellProperties = tableCellProperties;
 
-                        paragraph.AppendChild(run);
-                        tableCell.AppendChild(paragraph);
-                        tableRow.AppendChild(tableCell);
-                    });
-                    table.AppendChild(tableRow);
+                    var paragraph = new Paragraph();
+                    var run = new Run();
+                    DocumentBuilderHelpers.AddTextToElement(run, dataCell.Text);
+
+                    if (dataCell.Options != null && dataCell.Options.Bold)
+                    {
+                        run.RunProperties = new RunProperties(new Bold());
+                    }
+
+                    paragraph.AppendChild(run);
+                    tableCell.AppendChild(paragraph);
+                    tableRow.AppendChild(tableCell);
                 });
+                _table.AppendChild(tableRow);
+            }
 
-                Body.AppendChild(table);
+            public void Build(OpenXmlElement parentElement)
+            {
+                parentElement.AppendChild(_table);
+            }
+        }
+
+        private class DocumentBuilder
+        {
+            private readonly WordprocessingDocument _document;
+            private readonly Body _body;
+
+            public DocumentBuilder(string filePath)
+            {
+                _document = WordprocessingDocument.Create(filePath, WordprocessingDocumentType.Document);
+                var mainPart = _document.AddMainDocumentPart();
+                mainPart.Document = new Document(new Body());
+                _body = mainPart.Document.Body;
+            }
+
+            public void AddLineBreak()
+            {
+                _body.AppendChild(new Paragraph(new Break()));
+            }
+
+            public void AddParagraphToDocument(string text)
+            {
+                var para = new Paragraph();
+                var run = new Run();
+                DocumentBuilderHelpers.AddTextToElement(run, text);
+                para.AppendChild(run);
+                _body.AppendChild(para);
+            }
+
+            public void AddTable(List<List<BuilderTableCell>> data)
+            {
+                var tableBuilder = new TableBuilder();
+
+                data.ForEach(dataRow => { tableBuilder.AddRowToTable(dataRow); });
+
+                tableBuilder.Build(_body);
             }
 
             public void Build()
@@ -115,15 +152,38 @@ namespace GenerateWordDoc
                 _document.Close();
             }
 
-            public void AddLineBreak()
+            public enum HeadingOptions
             {
-                AddParagraphToDocument("");
+                Heading1,
+                Heading2
+            }
+
+            private static readonly Dictionary<HeadingOptions, string> HeadingSizes =
+                new Dictionary<HeadingOptions, string>
+                {
+                    {HeadingOptions.Heading1, "80"}
+                };
+
+            public void AddHeading(string text, HeadingOptions level)
+            {
+                _body.AppendChild(new Paragraph(new Run(new Text(text))
+                {
+                    RunProperties = new RunProperties
+                    {
+                        FontSize = new FontSize {Val = HeadingSizes[level]}
+                    }
+                }));
             }
         }
 
         static void Main(string[] args)
         {
             var builder = new DocumentBuilder(args[0]);
+
+            builder.AddHeading("Meow", DocumentBuilder.HeadingOptions.Heading1);
+            builder.AddParagraphToDocument(
+                "Here is an introductory paragraph, it does some stuff.\r\nIt even has a new line in it, which as it turns out needs some manual poking");
+            builder.AddLineBreak();
 
             var rows = new List<List<BuilderTableCell>>
             {
@@ -155,7 +215,7 @@ namespace GenerateWordDoc
             builder.AddLineBreak();
             builder.AddTable(rows);
             builder.Build();
-            Console.WriteLine("Hello World!");
+            Console.WriteLine($"Generated document at: {args[0]}");
         }
     }
 }
