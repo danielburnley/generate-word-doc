@@ -3,14 +3,14 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
 
-namespace GenerateWordDoc.DocumentBuilder
+namespace Example1.DocumentBuilder
 {
-    public class Builder
+    public class ExampleOneBuilder
     {
         private readonly WordprocessingDocument _document;
         private readonly Body _body;
 
-        public Builder(string filePath)
+        public ExampleOneBuilder(string filePath)
         {
             _document = WordprocessingDocument.Create(filePath, WordprocessingDocumentType.Document);
             var mainPart = _document.AddMainDocumentPart();

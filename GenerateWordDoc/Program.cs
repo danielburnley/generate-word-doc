@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using GenerateWordDoc.DocumentBuilder;
-using static GenerateWordDoc.DocumentBuilder.TableBuilder;
+using Example1.DocumentBuilder;
+using static Example1.DocumentBuilder.TableBuilder;
 
 namespace GenerateWordDoc
 {
@@ -9,10 +9,10 @@ namespace GenerateWordDoc
     {
         static void Main(string[] args)
         {
-            var builder = new Builder(args[0]);
+            var builder = new ExampleOneBuilder(args[0]);
 
-            builder.AddHeading("Meow", Builder.HeadingOptions.Heading1);
-            builder.AddHeading("Sub meow", Builder.HeadingOptions.Heading2);
+            builder.AddHeading("Meow", ExampleOneBuilder.HeadingOptions.Heading1);
+            builder.AddHeading("Sub meow", ExampleOneBuilder.HeadingOptions.Heading2);
             builder.AddParagraphToDocument(
                 "Here is an introductory paragraph, it does some stuff.\r\nIt even has a new line in it, which as it turns out needs some manual poking");
             builder.AddLineBreak();

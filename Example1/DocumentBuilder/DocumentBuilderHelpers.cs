@@ -3,7 +3,7 @@ using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Wordprocessing;
 
-namespace GenerateWordDoc
+namespace Example1.DocumentBuilder
 {
     public static class DocumentBuilderHelpers
     {

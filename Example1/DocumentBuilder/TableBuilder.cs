@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Wordprocessing;
 
-namespace GenerateWordDoc.DocumentBuilder
+namespace Example1.DocumentBuilder
 {
     public class TableBuilder
     {
