@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Example1.DocumentBuilder;
-using static Example1.DocumentBuilder.TableBuilder;
 
 namespace GenerateWordDoc
 {
@@ -9,7 +8,12 @@ namespace GenerateWordDoc
     {
         static void Main(string[] args)
         {
-            var builder = new ExampleOneBuilder(args[0]);
+            ExampleOne(args);
+        }
+
+        private static void ExampleOne(IReadOnlyList<string> args)
+        {
+            var builder = new ExampleOneBuilder($"example-one-{args[0]}");
 
             builder.AddHeading("Meow", ExampleOneBuilder.HeadingOptions.Heading1);
             builder.AddHeading("Sub meow", ExampleOneBuilder.HeadingOptions.Heading2);
@@ -17,29 +21,29 @@ namespace GenerateWordDoc
                 "Here is an introductory paragraph, it does some stuff.\r\nIt even has a new line in it, which as it turns out needs some manual poking");
             builder.AddLineBreak();
 
-            var rows = new List<List<BuilderTableCell>>
+            var rows = new List<List<TableBuilder.BuilderTableCell>>
             {
-                new List<BuilderTableCell>
+                new List<TableBuilder.BuilderTableCell>
                 {
-                    new BuilderTableCell {Text = "Recommendation", Options = new BuilderTableCellOptions {Bold = true}},
-                    new BuilderTableCell {Text = "A bunch of example text etc etc with some more to pad the text out"},
-                    new BuilderTableCell {Text = "Date:", Options = new BuilderTableCellOptions {Bold = true}},
-                    new BuilderTableCell {Text = "01/09/2020"}
+                    new TableBuilder.BuilderTableCell {Text = "Recommendation", Options = new TableBuilder.BuilderTableCellOptions {Bold = true}},
+                    new TableBuilder.BuilderTableCell {Text = "A bunch of example text etc etc with some more to pad the text out"},
+                    new TableBuilder.BuilderTableCell {Text = "Date:", Options = new TableBuilder.BuilderTableCellOptions {Bold = true}},
+                    new TableBuilder.BuilderTableCell {Text = "01/09/2020"}
                 },
-                new List<BuilderTableCell>
+                new List<TableBuilder.BuilderTableCell>
                 {
-                    new BuilderTableCell {Options = new BuilderTableCellOptions {MergeAbove = true}},
-                    new BuilderTableCell {Options = new BuilderTableCellOptions {MergeAbove = true}},
-                    new BuilderTableCell {Text = "Author:", Options = new BuilderTableCellOptions {Bold = true}},
-                    new BuilderTableCell {Text = "Meow Meowington"}
+                    new TableBuilder.BuilderTableCell {Options = new TableBuilder.BuilderTableCellOptions {MergeAbove = true}},
+                    new TableBuilder.BuilderTableCell {Options = new TableBuilder.BuilderTableCellOptions {MergeAbove = true}},
+                    new TableBuilder.BuilderTableCell {Text = "Author:", Options = new TableBuilder.BuilderTableCellOptions {Bold = true}},
+                    new TableBuilder.BuilderTableCell {Text = "Meow Meowington"}
                 },
-                new List<BuilderTableCell>
+                new List<TableBuilder.BuilderTableCell>
                 {
-                    new BuilderTableCell
-                        {Text = "Is AO Required?", Options = new BuilderTableCellOptions {Bold = true}},
-                    new BuilderTableCell {Text = "No"},
-                    new BuilderTableCell {Text = "Cleared by:", Options = new BuilderTableCellOptions {Bold = true}},
-                    new BuilderTableCell {Text = "Barks Barkington"}
+                    new TableBuilder.BuilderTableCell
+                        {Text = "Is AO Required?", Options = new TableBuilder.BuilderTableCellOptions {Bold = true}},
+                    new TableBuilder.BuilderTableCell {Text = "No"},
+                    new TableBuilder.BuilderTableCell {Text = "Cleared by:", Options = new TableBuilder.BuilderTableCellOptions {Bold = true}},
+                    new TableBuilder.BuilderTableCell {Text = "Barks Barkington"}
                 }
             };
 
@@ -48,7 +52,7 @@ namespace GenerateWordDoc
             var listItems = new List<string> {"First line in a list", "then a second", "And then a third"};
             builder.AddBulletListToDocument(listItems);
             builder.Build();
-            Console.WriteLine($"Generated document at: {args[0]}");
+            Console.WriteLine($"Generated document at: example-one-{args[0]}");
         }
     }
 }
