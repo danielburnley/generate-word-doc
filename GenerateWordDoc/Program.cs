@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using GenerateWordDoc.DocumentBuilder;
+using static GenerateWordDoc.DocumentBuilder.TableBuilder;
 
 namespace GenerateWordDoc
 {
@@ -16,29 +17,29 @@ namespace GenerateWordDoc
                 "Here is an introductory paragraph, it does some stuff.\r\nIt even has a new line in it, which as it turns out needs some manual poking");
             builder.AddLineBreak();
 
-            var rows = new List<List<TableBuilder.BuilderTableCell>>
+            var rows = new List<List<BuilderTableCell>>
             {
-                new List<TableBuilder.BuilderTableCell>
+                new List<BuilderTableCell>
                 {
-                    new TableBuilder.BuilderTableCell {Text = "Recommendation", Options = new TableBuilder.BuilderTableCellOptions {Bold = true}},
-                    new TableBuilder.BuilderTableCell {Text = "A bunch of example text etc etc with some more to pad the text out"},
-                    new TableBuilder.BuilderTableCell {Text = "Date:", Options = new TableBuilder.BuilderTableCellOptions {Bold = true}},
-                    new TableBuilder.BuilderTableCell {Text = "01/09/2020"}
+                    new BuilderTableCell {Text = "Recommendation", Options = new BuilderTableCellOptions {Bold = true}},
+                    new BuilderTableCell {Text = "A bunch of example text etc etc with some more to pad the text out"},
+                    new BuilderTableCell {Text = "Date:", Options = new BuilderTableCellOptions {Bold = true}},
+                    new BuilderTableCell {Text = "01/09/2020"}
                 },
-                new List<TableBuilder.BuilderTableCell>
+                new List<BuilderTableCell>
                 {
-                    new TableBuilder.BuilderTableCell {Options = new TableBuilder.BuilderTableCellOptions {MergeAbove = true}},
-                    new TableBuilder.BuilderTableCell {Options = new TableBuilder.BuilderTableCellOptions {MergeAbove = true}},
-                    new TableBuilder.BuilderTableCell {Text = "Author:", Options = new TableBuilder.BuilderTableCellOptions {Bold = true}},
-                    new TableBuilder.BuilderTableCell {Text = "Meow Meowington"}
+                    new BuilderTableCell {Options = new BuilderTableCellOptions {MergeAbove = true}},
+                    new BuilderTableCell {Options = new BuilderTableCellOptions {MergeAbove = true}},
+                    new BuilderTableCell {Text = "Author:", Options = new BuilderTableCellOptions {Bold = true}},
+                    new BuilderTableCell {Text = "Meow Meowington"}
                 },
-                new List<TableBuilder.BuilderTableCell>
+                new List<BuilderTableCell>
                 {
-                    new TableBuilder.BuilderTableCell
-                        {Text = "Is AO Required?", Options = new TableBuilder.BuilderTableCellOptions {Bold = true}},
-                    new TableBuilder.BuilderTableCell {Text = "No"},
-                    new TableBuilder.BuilderTableCell {Text = "Cleared by:", Options = new TableBuilder.BuilderTableCellOptions {Bold = true}},
-                    new TableBuilder.BuilderTableCell {Text = "Barks Barkington"}
+                    new BuilderTableCell
+                        {Text = "Is AO Required?", Options = new BuilderTableCellOptions {Bold = true}},
+                    new BuilderTableCell {Text = "No"},
+                    new BuilderTableCell {Text = "Cleared by:", Options = new BuilderTableCellOptions {Bold = true}},
+                    new BuilderTableCell {Text = "Barks Barkington"}
                 }
             };
 
