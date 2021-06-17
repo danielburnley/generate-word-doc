@@ -6,12 +6,12 @@ using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace ExampleTwo
 {
-    public class DocumentBuilder : IDocumentBuilder
+    public class ExampleTwoBuilder : IDocumentBuilder
     {
         private readonly WordprocessingDocument _document;
         private readonly Body _body;
 
-        public DocumentBuilder(Stream stream)
+        public ExampleTwoBuilder(Stream stream)
         {
             _document = WordprocessingDocument.Create(stream, WordprocessingDocumentType.Document);
             _document.AddMainDocumentPart();
